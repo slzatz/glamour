@@ -123,15 +123,16 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 		var e uint
 		l = 1
 		n := node
+		post := "\n"
 		for n.PreviousSibling() != nil && (n.PreviousSibling().Kind() == ast.KindListItem) {
 			l++
 			n = n.PreviousSibling()
 		}
 		if node.Parent().(*ast.List).IsOrdered() {
 			e = l
+			post = "\n\n"
 		}
 
-		post := "\n"
 		if (node.LastChild() != nil && node.LastChild().Kind() == ast.KindList) ||
 			node.NextSibling() == nil {
 			post = ""
