@@ -1,6 +1,7 @@
 package ansi
 
 import (
+	"fmt"
 	"io"
 	"strconv"
 )
@@ -14,12 +15,14 @@ func (e *ItemElement) Render(w io.Writer, ctx RenderContext) error {
 	var el *BaseElement
 	if e.Enumeration > 0 {
 		el = &BaseElement{
-			Style:  ctx.options.Styles.Enumeration,
-			Prefix: strconv.FormatInt(int64(e.Enumeration), 10),
+			Style: ctx.options.Styles.Enumeration,
+			//Prefix: "\x1b[36m" + strconv.FormatInt(int64(e.Enumeration), 10) + ". ", // modified slz; quite a kluge
+			Prefix: fmt.Sprintf("\x1b[1;36m%s. ", strconv.FormatInt(int64(e.Enumeration), 10)), // modified slz; quite a kluge
 		}
 	} else {
 		el = &BaseElement{
-			Style: ctx.options.Styles.Item,
+			Style:  ctx.options.Styles.Item,
+			Prefix: "\x1b[1;36m• ", // added slz
 		}
 	}
 
