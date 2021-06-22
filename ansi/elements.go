@@ -123,19 +123,37 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 		var e uint
 		l = 1
 		n := node
-		post := "\n"
+		post := ""
+		pre := ""
 		for n.PreviousSibling() != nil && (n.PreviousSibling().Kind() == ast.KindListItem) {
 			l++
 			n = n.PreviousSibling()
 		}
-		if node.Parent().(*ast.List).IsOrdered() {
-			e = l
-			post = "\n\n"
-		}
 
-		if (node.LastChild() != nil && node.LastChild().Kind() == ast.KindList) ||
-			node.NextSibling() == nil {
-			post = ""
+		if node.Parent().(*ast.List).IsOrdered() { //&& node.NextSibling() != nil {
+			e = l
+			// this will appear after every ordered list item that doesn't have a subitem
+			// except the last subitem or item
+			if node.NextSibling() != nil {
+				//post = "<=\n\n"
+				post = "\n\n"
+			}
+			// this will appear before the first item or subitem
+			if node.PreviousSibling() == nil {
+				//pre = "!!!\n"
+				pre = "\n"
+			}
+
+			/*
+				// this will appear after the last ordered item or subitem
+				// did not need it
+				if node.LastChild() != nil && node.LastChild().Kind() == ast.KindList { //||
+					post = "$\n"
+				}
+			*/
+
+		} else {
+			post = "\n"
 		}
 
 		if node.FirstChild() != nil &&
@@ -152,7 +170,8 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 		}
 
 		return Element{
-			Exiting: post,
+			Entering: pre,  //Entering appears before every element
+			Exiting:  post, //Exiting after every element
 			Renderer: &ItemElement{
 				Enumeration: e,
 			},

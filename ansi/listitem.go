@@ -16,7 +16,7 @@ func (e *ItemElement) Render(w io.Writer, ctx RenderContext) error {
 	if e.Enumeration > 0 {
 		el = &BaseElement{
 			Style: ctx.options.Styles.Enumeration,
-			//Prefix: "\x1b[36m" + strconv.FormatInt(int64(e.Enumeration), 10) + ". ", // modified slz; quite a kluge
+			//Prefix: strconv.FormatInt(int64(e.Enumeration), 10), //original
 			Prefix: fmt.Sprintf("\x1b[1;36m%s. ", strconv.FormatInt(int64(e.Enumeration), 10)), // modified slz; quite a kluge
 		}
 	} else {
