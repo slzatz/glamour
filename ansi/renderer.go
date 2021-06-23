@@ -13,6 +13,8 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
+var NumLinks int
+
 // Options is used to configure an ANSIRenderer.
 type Options struct {
 	BaseURL      string
@@ -28,6 +30,7 @@ type ANSIRenderer struct {
 
 // NewRenderer returns a new ANSIRenderer with style and options set.
 func NewRenderer(options Options) *ANSIRenderer {
+	NumLinks = 0
 	return &ANSIRenderer{
 		context: NewRenderContext(options),
 	}

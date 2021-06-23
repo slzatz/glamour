@@ -1,9 +1,12 @@
 package ansi
 
 import (
+	"fmt"
 	"io"
 	"net/url"
 )
+
+//var NumLinks int
 
 // A LinkElement is used to render hyperlinks.
 type LinkElement struct {
@@ -15,11 +18,13 @@ type LinkElement struct {
 
 func (e *LinkElement) Render(w io.Writer, ctx RenderContext) error {
 	var textRendered bool
+	NumLinks++
 	if len(e.Text) > 0 && e.Text != e.URL {
 		textRendered = true
 
 		el := &BaseElement{
-			Token: e.Text,
+			//Token: e.Text,
+			Token: fmt.Sprintf("[%d]", NumLinks),
 			Style: ctx.options.Styles.LinkText,
 		}
 		err := el.Render(w, ctx)
@@ -64,7 +69,7 @@ func (e *LinkElement) Render(w io.Writer, ctx RenderContext) error {
 		}
 
 		el := &BaseElement{
-			Token:  resolveRelativeURL(e.BaseURL, e.URL),
+			Token:  "\x1b]8;;" + resolveRelativeURL(e.BaseURL, e.URL) + "\x1b\\" + e.Text + "\x1b]8;;\x1b\\",
 			Prefix: pre,
 			Style:  style,
 		}
