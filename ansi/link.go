@@ -18,19 +18,22 @@ type LinkElement struct {
 
 func (e *LinkElement) Render(w io.Writer, ctx RenderContext) error {
 	var textRendered bool
-	NumLinks++
-	if len(e.Text) > 0 && e.Text != e.URL {
+	var token string
+	//if len(e.Text) > 0 && e.Text != e.URL {
+	if ctx.options.LinkNumbers {
 		textRendered = true
+		NumLinks++
+		token = fmt.Sprintf("[%d]", NumLinks)
+	}
 
-		el := &BaseElement{
-			//Token: e.Text,
-			Token: fmt.Sprintf("[%d]", NumLinks),
-			Style: ctx.options.Styles.LinkText,
-		}
-		err := el.Render(w, ctx)
-		if err != nil {
-			return err
-		}
+	el := &BaseElement{
+		//Token: e.Text,
+		Token: token,
+		Style: ctx.options.Styles.LinkText,
+	}
+	err := el.Render(w, ctx)
+	if err != nil {
+		return err
 	}
 
 	/*

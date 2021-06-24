@@ -16,6 +16,7 @@ import (
 	"github.com/yuin/goldmark/util"
 
 	"github.com/charmbracelet/glamour/ansi"
+	//"/home/slzatz/glamour/ansi"
 )
 
 // A TermRendererOption sets an option on a TermRenderer.
@@ -71,6 +72,7 @@ func NewTermRenderer(options ...TermRendererOption) (*TermRenderer, error) {
 		ansiOptions: ansi.Options{
 			WordWrap:     80,
 			ColorProfile: termenv.TrueColor,
+			//LinkNumbers:  true,
 		},
 	}
 	for _, o := range options {
@@ -181,6 +183,14 @@ func WithStylesFromJSONFile(filename string) TermRendererOption {
 func WithWordWrap(wordWrap int) TermRendererOption {
 	return func(tr *TermRenderer) error {
 		tr.ansiOptions.WordWrap = wordWrap
+		return nil
+	}
+}
+
+// Added by slz 06242021
+func WithLinkNumbers(linkNumbers bool) TermRendererOption {
+	return func(tr *TermRenderer) error {
+		tr.ansiOptions.LinkNumbers = linkNumbers
 		return nil
 	}
 }
