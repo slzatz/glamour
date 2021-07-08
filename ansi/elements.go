@@ -119,13 +119,16 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 		}
 
 	case ast.KindListItem:
+		// for every one node.Parent().Kind().String() = "List"
+		// for every one node.Kind().String() = "ListItem"
+		// for every one node.FirstChild.Kind().String() = "Paragraph"
 		var l uint
 		var e uint
 		l = 1
 		n := node
 		post := ""
 		pre := ""
-		for n.PreviousSibling() != nil && (n.PreviousSibling().Kind() == ast.KindListItem) {
+		for n.PreviousSibling() != nil { //&& (n.PreviousSibling().Kind() == ast.KindListItem) {
 			l++
 			n = n.PreviousSibling()
 		}
