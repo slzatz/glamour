@@ -195,6 +195,14 @@ func WithLinkNumbers(linkNumbers bool) TermRendererOption {
 	}
 }
 
+// WithWordWrap sets a TermRenderer's word wrap.
+func WithPreservedNewLines() TermRendererOption {
+	return func(tr *TermRenderer) error {
+		tr.ansiOptions.PreserveNewLines = true
+		return nil
+	}
+}
+
 // WithEmoji sets a TermRenderer's emoji rendering.
 func WithEmoji() TermRendererOption {
 	return func(tr *TermRenderer) error {

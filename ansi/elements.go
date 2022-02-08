@@ -132,9 +132,11 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 			l++
 			n = n.PreviousSibling()
 		}
-
 		if node.Parent().(*ast.List).IsOrdered() { //&& node.NextSibling() != nil {
 			e = l
+			if node.Parent().(*ast.List).Start != 1 {
+				e += uint(node.Parent().(*ast.List).Start) - 1
+			}
 			// this will appear after every ordered list item that doesn't have a subitem
 			// except the last subitem or item
 			if node.NextSibling() != nil {
@@ -176,6 +178,7 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 			Entering: pre,  //Entering appears before every element
 			Exiting:  post, //Exiting after every element
 			Renderer: &ItemElement{
+				IsOrdered:   node.Parent().(*ast.List).IsOrdered(),
 				Enumeration: e,
 			},
 		}
@@ -351,7 +354,7 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 		n := node.(*ast.HTMLBlock)
 		return Element{
 			Renderer: &BaseElement{
-				Token: ctx.SanitizeHTML(string(n.Text(source)), true) + "\n",
+				Token: ctx.SanitizeHTML(string(n.Text(source)), true),
 				Style: ctx.options.Styles.HTMLBlock.StylePrimitive,
 			},
 		}
