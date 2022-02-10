@@ -111,6 +111,7 @@ type StyleConfig struct {
 
 	Text           StylePrimitive `json:"text,omitempty"`
 	Strikethrough  StylePrimitive `json:"strikethrough,omitempty"`
+	Highlight      StylePrimitive `json:"highlight,omitempty"`
 	Emph           StylePrimitive `json:"emph,omitempty"`
 	Strong         StylePrimitive `json:"strong,omitempty"`
 	HorizontalRule StylePrimitive `json:"hr,omitempty"`

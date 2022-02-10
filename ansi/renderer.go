@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/muesli/termenv"
+	zastext "github.com/slzatz/vimango/extension/ast"
 	east "github.com/yuin/goldmark-emoji/ast"
 	"github.com/yuin/goldmark/ast"
 	astext "github.com/yuin/goldmark/extension/ast"
@@ -86,6 +87,9 @@ func (r *ANSIRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
 	// strikethrough
 	reg.Register(astext.KindStrikethrough, r.renderNode)
 
+	// highlight added slz
+	reg.Register(zastext.KindHighlight, r.renderNode)
+
 	// emoji
 	reg.Register(east.KindEmoji, r.renderNode)
 }
@@ -146,7 +150,7 @@ func isChild(node ast.Node) bool {
 	for n := node.Parent(); n != nil; n = n.Parent() {
 		// These types are already rendered by their parent
 		switch n.Kind() {
-		case ast.KindLink, ast.KindImage, ast.KindEmphasis, astext.KindStrikethrough, astext.KindTableCell:
+		case ast.KindLink, ast.KindImage, ast.KindEmphasis, astext.KindStrikethrough, zastext.KindHighlight, astext.KindTableCell:
 			return true
 		}
 	}

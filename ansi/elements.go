@@ -7,6 +7,7 @@ import (
 	"io"
 	"strings"
 
+	zastext "github.com/slzatz/vimango/extension/ast"
 	east "github.com/yuin/goldmark-emoji/ast"
 	"github.com/yuin/goldmark/ast"
 	astext "github.com/yuin/goldmark/extension/ast"
@@ -225,6 +226,17 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 			},
 		}
 
+	case zastext.KindHighlight:
+		n := node.(*zastext.Highlight)
+		s := string(n.Text(source))
+		style := ctx.options.Styles.Highlight
+
+		return Element{
+			Renderer: &BaseElement{
+				Token: html.UnescapeString(s),
+				Style: style,
+			},
+		}
 	case ast.KindThematicBreak:
 		return Element{
 			Entering: "",

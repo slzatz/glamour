@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/muesli/termenv"
+	zextension "github.com/slzatz/vimango/extension"
 	"github.com/yuin/goldmark"
 	emoji "github.com/yuin/goldmark-emoji"
 	"github.com/yuin/goldmark/extension"
@@ -64,6 +65,7 @@ func NewTermRenderer(options ...TermRendererOption) (*TermRenderer, error) {
 			goldmark.WithExtensions(
 				extension.GFM,
 				extension.DefinitionList,
+				zextension.Highlight,
 			),
 			goldmark.WithParserOptions(
 				parser.WithAutoHeadingID(),
