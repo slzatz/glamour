@@ -190,12 +190,12 @@ func WithWordWrap(wordWrap int) TermRendererOption {
 }
 
 // Added by slz 06242021
-func WithLinkNumbers(linkNumbers bool) TermRendererOption {
-	return func(tr *TermRenderer) error {
-		tr.ansiOptions.LinkNumbers = linkNumbers
-		return nil
-	}
-}
+//func WithLinkNumbers(linkNumbers bool) TermRendererOption {
+//	return func(tr *TermRenderer) error {
+//		tr.ansiOptions.LinkNumbers = linkNumbers
+//		return nil
+//	}
+//}
 
 // WithWordWrap sets a TermRenderer's word wrap.
 func WithPreservedNewLines() TermRendererOption {
