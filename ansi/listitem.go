@@ -3,6 +3,7 @@ package ansi
 import (
 	"io"
 	"strconv"
+  //"fmt" ////slz
 )
 
 // An ItemElement is used to render items inside a list.
@@ -20,8 +21,10 @@ func (e *ItemElement) Render(w io.Writer, ctx RenderContext) error {
 			Prefix: strconv.FormatInt(int64(e.Enumeration), 10), //nolint: gosec
 		}
 	} else {
+  //fmt.Println("ItemElement.Render") ////slz
 		el = &BaseElement{
 			Style: ctx.options.Styles.Item,
+			//Prefix: "+", ////slz
 		}
 	}
 

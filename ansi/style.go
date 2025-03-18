@@ -40,6 +40,7 @@ type StylePrimitive struct {
 	BlockPrefix     string  `json:"block_prefix,omitempty"`
 	BlockSuffix     string  `json:"block_suffix,omitempty"`
 	Prefix          string  `json:"prefix,omitempty"`
+	PrefixColor     *string  `json:"prefix_color,omitempty"`
 	Suffix          string  `json:"suffix,omitempty"`
 	Color           *string `json:"color,omitempty"`
 	BackgroundColor *string `json:"background_color,omitempty"`

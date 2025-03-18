@@ -98,24 +98,87 @@ func (e *BaseElement) Render(w io.Writer, ctx RenderContext) error {
 	return e.doRender(w, ctx.options.ColorProfile, st1, st2)
 }
 
-func (e *BaseElement) doRender(w io.Writer, p termenv.Profile, st1, st2 StylePrimitive) error {
-	renderText(w, p, st1, e.Prefix)
-	defer func() {
-		renderText(w, p, st1, e.Suffix)
-	}()
+//func (e *BaseElement) doRender(w io.Writer, p termenv.Profile, st1, st2 StylePrimitive) error {
+//	renderText(w, p, st1, e.Prefix)
+//	defer func() {
+//		renderText(w, p, st1, e.Suffix)
+//	}()
+//
+//	// render unstyled prefix/suffix
+//	renderText(w, p, st1, st2.BlockPrefix)
+//	defer func() {
+//		renderText(w, p, st1, st2.BlockSuffix)
+//	}()
+//
+//	// render styled prefix/suffix
+//	renderText(w, p, st2, st2.Prefix)
+//	defer func() {
+//		renderText(w, p, st2, st2.Suffix)
+//	}()
+//
+//	s := e.Token
+//	if len(st2.Format) > 0 {
+//		var err error
+//		s, err = formatToken(st2.Format, s)
+//		if err != nil {
+//			return err
+//		}
+//	}
+//	renderText(w, p, st2, escapeReplacer.Replace(s))
+//	return nil
+//}
 
-	// render unstyled prefix/suffix
-	renderText(w, p, st1, st2.BlockPrefix)
+func (e *BaseElement) doRender(w io.Writer, p termenv.Profile, st1, st2 StylePrimitive) error {
+	// Render parent prefix (e.g., block quote indentation)
+	if len(e.Prefix) > 0 {
+  //fmt.Println("Prefix: ", e.Prefix, len(e.Prefix), "$$$") ////slz
+		// Create a temporary StylePrimitive for the prefix
+		prefixStyle := st1 // Use the element style as the base st1 is the parent
+		// If there's a specific prefix color, use it
+  //fmt.Println("prefix_color: ", st1.PrefixColor) ////slz
+		if st1.PrefixColor != nil {
+			// Make a copy to avoid modifying the original
+			prefixColor := *st1.PrefixColor
+			prefixStyle.Color = &prefixColor
+		}
+		renderText(w, p, prefixStyle, e.Prefix)
+    //func renderText(w io.Writer, p termenv.Profile, rules StylePrimitive, s string) {
+	}
+	
+	// Render block prefix with parent style
+	//renderText(w, p, st1, st2.BlockPrefix)
+  //this is rendering the block prefix in the style sheet that is under item or enumeration with the parent style
+  // which is the prefix_color in the list element of the style sheet
+  if len(st2.BlockPrefix) > 0 {
+    blockPrefixStyle := st1 // Use the element style as the base st1 is the parent
+		if st1.PrefixColor != nil {
+	    blockPrefixColor := *st1.PrefixColor
+	    blockPrefixStyle.Color = &blockPrefixColor
+    }
+	renderText(w, p, blockPrefixStyle, st2.BlockPrefix)
+  }
 	defer func() {
 		renderText(w, p, st1, st2.BlockSuffix)
 	}()
 
-	// render styled prefix/suffix
-	renderText(w, p, st2, st2.Prefix)
+	// Render element prefix with element style
+	if len(st2.Prefix) > 0 {
+		// Create a temporary StylePrimitive for the element prefix
+		prefixStyle := st2
+		// If there's a specific prefix color, use it
+		if st2.PrefixColor != nil {
+			// Make a copy to avoid modifying the original
+			prefixColor := *st2.PrefixColor
+			prefixStyle.Color = &prefixColor
+		}
+		renderText(w, p, prefixStyle, st2.Prefix)
+	}
+	
 	defer func() {
 		renderText(w, p, st2, st2.Suffix)
 	}()
 
+	// Format and render the token content
 	s := e.Token
 	if len(st2.Format) > 0 {
 		var err error
@@ -124,6 +187,7 @@ func (e *BaseElement) doRender(w io.Writer, p termenv.Profile, st1, st2 StylePri
 			return err
 		}
 	}
+	
 	renderText(w, p, st2, escapeReplacer.Replace(s))
 	return nil
 }

@@ -23,6 +23,7 @@ func (e *BlockElement) Render(w io.Writer, ctx RenderContext) error {
 	bs := ctx.blockStack
 	bs.Push(*e)
 
+  //fmt.Println("blockelement prefix: ", e.Style.BlockPrefix) ////slz
 	renderText(w, ctx.options.ColorProfile, bs.Parent().Style.StylePrimitive, e.Style.BlockPrefix)
 	renderText(bs.Current().Block, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, e.Style.Prefix)
 	return nil
