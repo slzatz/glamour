@@ -1,3 +1,6 @@
+// Package glamour lets you render markdown documents & templates on ANSI
+// compatible terminals. You can create your own stylesheet or simply use one of
+// the stylish defaults
 package glamour
 
 import (
@@ -202,7 +205,16 @@ func WithTableWrap(tableWrap bool) TermRendererOption {
 	}
 }
 
-// WithPreservedNewlines preserves newlines from being replaced.
+// WithInlineTableLinks forces tables to render links inline. By default,links
+// are rendered as a list of links at the bottom of the table.
+func WithInlineTableLinks(inlineTableLinks bool) TermRendererOption {
+	return func(tr *TermRenderer) error {
+		tr.ansiOptions.InlineTableLinks = inlineTableLinks
+		return nil
+	}
+}
+
+// WithPreservedNewLines preserves newlines from being replaced.
 func WithPreservedNewLines() TermRendererOption {
 	return func(tr *TermRenderer) error {
 		tr.ansiOptions.PreserveNewLines = true
