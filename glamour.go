@@ -93,16 +93,14 @@ func NewTermRenderer(options ...TermRendererOption) (*TermRenderer, error) {
 	// Build list of node renderers based on configuration
 	nodeRenderers := []util.PrioritizedValue{}
 
-	// If kitty images are enabled, add the kitty renderer with higher priority
-	// and tell ANSIRenderer to skip its image handler
-	if tr.kittyImageConfig != nil && tr.kittyImageConfig.Enabled {
-		kittyRenderer := ansi.NewKittyImageRenderer(*tr.kittyImageConfig)
-		nodeRenderers = append(nodeRenderers, util.Prioritized(kittyRenderer, highPriority+1))
-		tr.ansiOptions.SkipImageHandler = true
-	}
-
 	// Add the standard ANSI renderer
-	ar := ansi.NewRenderer(tr.ansiOptions)
+	// If kitty images are enabled, pass kitty config to renderer so ImageElement can output markers
+	var ar *ansi.ANSIRenderer
+	if tr.kittyImageConfig != nil && tr.kittyImageConfig.Enabled {
+		ar = ansi.NewRendererWithKitty(tr.ansiOptions, tr.kittyImageConfig)
+	} else {
+		ar = ansi.NewRenderer(tr.ansiOptions)
+	}
 	nodeRenderers = append(nodeRenderers, util.Prioritized(ar, highPriority))
 
 	tr.md.SetRenderer(

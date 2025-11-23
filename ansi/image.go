@@ -1,6 +1,7 @@
 package ansi
 
 import (
+	"fmt"
 	"io"
 	"strings"
 )
@@ -16,6 +17,19 @@ type ImageElement struct {
 
 // Render renders an ImageElement.
 func (e *ImageElement) Render(w io.Writer, ctx RenderContext) error {
+	// If kitty images are enabled, output kitty marker instead of standard image text
+	if ctx.kittyImageConfig != nil && ctx.kittyImageConfig.Enabled && ctx.kittyImageConfig.ImageCache != nil {
+		imageID, cols, rows, exists := ctx.kittyImageConfig.ImageCache(e.URL)
+		if exists {
+			// Output kitty image marker - will be replaced with Unicode placeholders later
+			marker := fmt.Sprintf("[KITTY_IMAGE:id=%d,cols=%d,rows=%d]", imageID, cols, rows)
+			_, err := w.Write([]byte(marker))
+			return err
+		}
+		// If not in cache, fall through to standard rendering
+	}
+
+	// Standard image rendering (when kitty not enabled or image not in cache)
 	style := ctx.options.Styles.ImageText
 	if e.TextOnly {
 		style.Format = strings.TrimSuffix(style.Format, " →")

@@ -15,6 +15,8 @@ type RenderContext struct {
 	table      *TableElement
 
 	stripper *bluemonday.Policy
+
+	kittyImageConfig *KittyImageConfig // For kitty terminal image rendering
 }
 
 // NewRenderContext returns a new RenderContext.

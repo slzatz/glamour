@@ -39,6 +39,15 @@ func NewRenderer(options Options) *ANSIRenderer {
 	}
 }
 
+// NewRendererWithKitty returns a new ANSIRenderer with kitty image config.
+func NewRendererWithKitty(options Options, kittyConfig *KittyImageConfig) *ANSIRenderer {
+	ctx := NewRenderContext(options)
+	ctx.kittyImageConfig = kittyConfig
+	return &ANSIRenderer{
+		context: ctx,
+	}
+}
+
 // RegisterFuncs implements NodeRenderer.RegisterFuncs.
 func (r *ANSIRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
 	// blocks
