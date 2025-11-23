@@ -34,10 +34,11 @@ type TermRendererOption func(*TermRenderer) error
 // TermRenderer can be used to render markdown content, posing a depth of
 // customization and styles to fit your needs.
 type TermRenderer struct {
-	md          goldmark.Markdown
-	ansiOptions ansi.Options
-	buf         bytes.Buffer
-	renderBuf   bytes.Buffer
+	md               goldmark.Markdown
+	ansiOptions      ansi.Options
+	kittyImageConfig *ansi.KittyImageConfig
+	buf              bytes.Buffer
+	renderBuf        bytes.Buffer
 }
 
 // Render initializes a new TermRenderer and renders a markdown with a specific
@@ -88,12 +89,25 @@ func NewTermRenderer(options ...TermRendererOption) (*TermRenderer, error) {
 			return nil, err
 		}
 	}
+
+	// Build list of node renderers based on configuration
+	nodeRenderers := []util.PrioritizedValue{}
+
+	// If kitty images are enabled, add the kitty renderer with higher priority
+	// and tell ANSIRenderer to skip its image handler
+	if tr.kittyImageConfig != nil && tr.kittyImageConfig.Enabled {
+		kittyRenderer := ansi.NewKittyImageRenderer(*tr.kittyImageConfig)
+		nodeRenderers = append(nodeRenderers, util.Prioritized(kittyRenderer, highPriority+1))
+		tr.ansiOptions.SkipImageHandler = true
+	}
+
+	// Add the standard ANSI renderer
 	ar := ansi.NewRenderer(tr.ansiOptions)
+	nodeRenderers = append(nodeRenderers, util.Prioritized(ar, highPriority))
+
 	tr.md.SetRenderer(
 		renderer.NewRenderer(
-			renderer.WithNodeRenderers(
-				util.Prioritized(ar, highPriority),
-			),
+			renderer.WithNodeRenderers(nodeRenderers...),
 		),
 	)
 	return tr, nil
@@ -191,6 +205,20 @@ func WithStylesFromJSONFile(filename string) TermRendererOption {
 func WithWordWrap(wordWrap int) TermRendererOption {
 	return func(tr *TermRenderer) error {
 		tr.ansiOptions.WordWrap = wordWrap
+		return nil
+	}
+}
+
+// WithKittyImages enables inline image rendering using the kitty graphics protocol.
+// The imageLoader function should load an image from a URL and return the image.Image.
+// maxWidthCols specifies the maximum width in terminal columns for rendered images.
+// isTmux should be true if running inside tmux (requires escape sequence wrapping).
+func WithKittyImages(enabled bool, imageCache func(string) (uint32, int, int, bool)) TermRendererOption {
+	return func(tr *TermRenderer) error {
+		tr.kittyImageConfig = &ansi.KittyImageConfig{
+			Enabled:    enabled,
+			ImageCache: imageCache,
+		}
 		return nil
 	}
 }

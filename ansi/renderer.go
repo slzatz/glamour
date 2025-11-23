@@ -24,6 +24,7 @@ type Options struct {
 	ColorProfile     termenv.Profile
 	Styles           StyleConfig
 	ChromaFormatter  string
+	SkipImageHandler bool // When true, don't register image handler (for custom image renderers)
 }
 
 // ANSIRenderer renders markdown content as ANSI escaped sequences.
@@ -57,7 +58,10 @@ func (r *ANSIRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
 	reg.Register(ast.KindAutoLink, r.renderNode)
 	reg.Register(ast.KindCodeSpan, r.renderNode)
 	reg.Register(ast.KindEmphasis, r.renderNode)
-	reg.Register(ast.KindImage, r.renderNode)
+	// Only register image handler if not skipped (allows custom image renderers)
+	if !r.context.options.SkipImageHandler {
+		reg.Register(ast.KindImage, r.renderNode)
+	}
 	reg.Register(ast.KindLink, r.renderNode)
 	reg.Register(ast.KindRawHTML, r.renderNode)
 	reg.Register(ast.KindText, r.renderNode)
