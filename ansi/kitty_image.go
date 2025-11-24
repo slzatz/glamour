@@ -2,7 +2,6 @@ package ansi
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/renderer"
@@ -11,8 +10,8 @@ import (
 
 // KittyImageConfig holds configuration for kitty image rendering
 type KittyImageConfig struct {
-	Enabled      bool
-	ImageCache   func(string) (uint32, int, int, bool) // url -> (imageID, cols, rows, exists)
+	Enabled    bool
+	ImageCache func(string) (uint32, int, int, bool) // url -> (imageID, cols, rows, exists)
 }
 
 // KittyImageRenderer intercepts markdown image nodes and emits Unicode placeholders
@@ -62,6 +61,7 @@ func (r *KittyImageRenderer) renderImage(w util.BufWriter, source []byte, node a
 	return ast.WalkSkipChildren, nil
 }
 
+/*
 // Diacritics table for encoding row/column positions (32 available)
 var kittyDiacritics = []rune{
 	'\u0305', '\u030D', '\u030E', '\u0310', '\u0312', '\u033D', '\u033E', '\u033F',
@@ -144,3 +144,4 @@ func buildKittyPlaceholderGrid(imageID uint32, cols, rows int) string {
 	sb.WriteString(reset)
 	return sb.String()
 }
+*/
