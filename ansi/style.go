@@ -40,7 +40,7 @@ type StylePrimitive struct {
 	BlockPrefix     string  `json:"block_prefix,omitempty"`
 	BlockSuffix     string  `json:"block_suffix,omitempty"`
 	Prefix          string  `json:"prefix,omitempty"`
-	PrefixColor     *string  `json:"prefix_color,omitempty"`
+	PrefixColor     *string `json:"prefix_color,omitempty"`
 	Suffix          string  `json:"suffix,omitempty"`
 	Color           *string `json:"color,omitempty"`
 	BackgroundColor *string `json:"background_color,omitempty"`
@@ -57,6 +57,15 @@ type StylePrimitive struct {
 	Inverse         *bool   `json:"inverse,omitempty"`
 	Blink           *bool   `json:"blink,omitempty"`
 	Format          string  `json:"format,omitempty"`
+
+	// Kitty text sizing protocol (OSC 66) - requires kitty 0.40.0+
+	// See: https://sw.kovidgoyal.net/kitty/text-sizing/
+	KittyScale       *uint `json:"kitty_scale,omitempty"`       // s: 1-7, overall scale (text in s×s cell blocks)
+	KittyWidth       *uint `json:"kitty_width,omitempty"`       // w: 0-7, explicit width in cells (0=auto)
+	KittyNumerator   *uint `json:"kitty_numerator,omitempty"`   // n: 0-15, fractional scale numerator
+	KittyDenominator *uint `json:"kitty_denominator,omitempty"` // d: 0-15, fractional scale denominator (must be > n)
+	KittyVAlign      *uint `json:"kitty_valign,omitempty"`      // v: 0=top, 1=bottom, 2=centered
+	KittyHAlign      *uint `json:"kitty_halign,omitempty"`      // h: 0=left, 1=right, 2=centered
 }
 
 // StyleTask holds the style settings for a task item.
@@ -173,6 +182,14 @@ func cascadeStylePrimitive(parent, child StylePrimitive, toBlock bool) StylePrim
 	s.Inverse = parent.Inverse
 	s.Blink = parent.Blink
 
+	// Kitty text sizing fields
+	s.KittyScale = parent.KittyScale
+	s.KittyWidth = parent.KittyWidth
+	s.KittyNumerator = parent.KittyNumerator
+	s.KittyDenominator = parent.KittyDenominator
+	s.KittyVAlign = parent.KittyVAlign
+	s.KittyHAlign = parent.KittyHAlign
+
 	if toBlock {
 		s.BlockPrefix = parent.BlockPrefix
 		s.BlockSuffix = parent.BlockSuffix
@@ -236,6 +253,26 @@ func cascadeStylePrimitive(parent, child StylePrimitive, toBlock bool) StylePrim
 	}
 	if child.Format != "" {
 		s.Format = child.Format
+	}
+
+	// Kitty text sizing child overrides
+	if child.KittyScale != nil {
+		s.KittyScale = child.KittyScale
+	}
+	if child.KittyWidth != nil {
+		s.KittyWidth = child.KittyWidth
+	}
+	if child.KittyNumerator != nil {
+		s.KittyNumerator = child.KittyNumerator
+	}
+	if child.KittyDenominator != nil {
+		s.KittyDenominator = child.KittyDenominator
+	}
+	if child.KittyVAlign != nil {
+		s.KittyVAlign = child.KittyVAlign
+	}
+	if child.KittyHAlign != nil {
+		s.KittyHAlign = child.KittyHAlign
 	}
 
 	return s
